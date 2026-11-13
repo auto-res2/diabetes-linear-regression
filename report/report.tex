@@ -1,0 +1,55 @@
+\documentclass[10pt,a4paper]{ltjsarticle}
+\usepackage[top=22mm,bottom=22mm,left=22mm,right=22mm]{geometry}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+\input{values.tex}
+\newcommand{\RepositoryUrl}{https://github.com/genga6/diabetes-linear-regression}
+
+\title{\vspace{-12mm}糖尿病データセットに対する線形回帰モデルの予測性能\vspace{-14mm}}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\section{実験設定}
+
+\paragraph{データセット}
+Efron ら~\cite{efron2004} が用いた糖尿病データセットを使用した．本データセットは糖尿病患者 \NSamples{} 名の記録からなり，各患者について年齢，性別，BMI，平均血圧，および 6 種類の血清測定値の計 \NFeatures{} 個の説明変数と，ベースラインから 1 年後の病勢進行度を表す目的変数が与えられている．データは公開されているファイルから取得し，ファイルの SHA-256 ハッシュ値が事前に固定した値と一致することを確認した上で使用した．説明変数には標準化などの前処理を施していない．目的変数の平均は \TargetMean{}，標準偏差は \TargetStd{} である．
+
+\paragraph{データの分割}
+全 \NSamples{} 件を，訓練データ \NTrain{} 件とテストデータ \NTest{} 件に無作為に分割した．テストデータの割合は 20\% とし，乱数のシードは \Seed{} に固定した．
+
+\paragraph{モデル}
+すべての説明変数を用いた線形回帰モデルを，訓練データに対して最小二乗法により当てはめた．切片項を含め，正則化は行っていない．実装には scikit-learn~\cite{sklearn} の \texttt{LinearRegression} を用いた．
+
+\paragraph{評価指標}
+予測性能は，平均二乗誤差（MSE），二乗平均平方根誤差（RMSE），平均絶対誤差（MAE），および決定係数（$R^2$）により評価した．各指標は訓練データとテストデータのそれぞれについて算出した．実験コードと出力は \url{\RepositoryUrl} で公開している．
+
+\section{結果}
+
+表~\ref{tab:metrics} に，訓練データおよびテストデータに対する各評価指標の値を示す．テストデータに対する MSE は \TestMse{}，RMSE は \TestRmse{}，$R^2$ は \TestRsq{} であった．テストデータに対する RMSE は目的変数の標準偏差 \TargetStd{} を下回っており，線形回帰モデルは目的変数の平均値を一律に予測する場合よりも小さい誤差で病勢進行度を予測できている．
+
+一方，テストデータに対する $R^2$ は訓練データに対する値 \TrainRsq{} を大きく下回った．MSE についても，テストデータでの値は訓練データでの値 \TrainMse{} より大きい．これらの結果は，本モデルが訓練データに対してはある程度当てはまるものの，未知のデータに対する説明力は限定的であることを示している．説明変数と目的変数の関係のうち，線形モデルで捉えられるのは一部にとどまると考えられる．
+
+\begin{table}[h]
+\centering
+\caption{線形回帰モデルの評価指標．MSE，RMSE，MAE は小さいほど，$R^2$ は大きいほど良い．}
+\label{tab:metrics}
+\begin{tabular}{lrrrr}
+\toprule
+データ & MSE & RMSE & MAE & $R^2$ \\
+\midrule
+訓練（\NTrain{} 件） & \TrainMse & \TrainRmse & \TrainMae & \TrainRsq \\
+テスト（\NTest{} 件） & \TestMse & \TestRmse & \TestMae & \TestRsq \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{thebibliography}{9}
+\bibitem{efron2004} B.~Efron, T.~Hastie, I.~Johnstone, and R.~Tibshirani. Least angle regression. \textit{The Annals of Statistics}, 32(2):407--499, 2004.
+\bibitem{sklearn} F.~Pedregosa et al. Scikit-learn: Machine learning in Python. \textit{Journal of Machine Learning Research}, 12:2825--2830, 2011.
+\end{thebibliography}
+
+\end{document}
