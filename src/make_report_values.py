@@ -20,4 +20,13 @@ for split, name in (("train", "Train"), ("test", "Test")):
         f"\\newcommand{{\\{name}Mae}}{{{m['mae']:.1f}}}",
         f"\\newcommand{{\\{name}Rsq}}{{{m['r2']:.3f}}}",
     ]
+env = result["environment"]
+lines += [
+    f"\\newcommand{{\\CpuModel}}{{{env['cpu_model'].replace('(R)', '').replace('(TM)', '').replace('CPU @ ', '')}}}",
+    f"\\newcommand{{\\CpuCores}}{{{env['cpu_logical_cores']}}}",
+    f"\\newcommand{{\\MemoryGib}}{{{env['memory_gib']}}}",
+    f"\\newcommand{{\\PythonVersion}}{{{env['python']}}}",
+    f"\\newcommand{{\\NumpyVersion}}{{{env['numpy']}}}",
+    f"\\newcommand{{\\SklearnVersion}}{{{env['scikit_learn']}}}",
+]
 Path("report/values.tex").write_text("\n".join(lines) + "\n")

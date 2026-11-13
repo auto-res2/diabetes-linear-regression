@@ -26,5 +26,15 @@
     "rmse": 58.51717127731565,
     "mae": 46.17358500370485,
     "r2": 0.33223321731061783
+  },
+  "environment": {
+    "cpu_model": "Intel(R) Core(TM) i5-10400 CPU @ 2.90GHz",
+    "cpu_logical_cores": 12,
+    "memory_gib": 7.7,
+    "architecture": "x86_64",
+    "os": "Linux-5.15.146.1-microsoft-standard-WSL2-x86_64-with-glibc2.35",
+    "python": "3.13.3",
+    "numpy": "2.3.4",
+    "scikit_learn": "1.7.2"
   }
 }

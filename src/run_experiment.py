@@ -1,8 +1,11 @@
 """糖尿病データセットに線形回帰を当てはめ、指標を results/metrics.json に書く。"""
 import json
+import os
+import platform
 from pathlib import Path
 
 import numpy as np
+import sklearn
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import train_test_split
@@ -24,6 +27,26 @@ def metrics(y_true: np.ndarray, y_pred: np.ndarray) -> dict[str, float]:
     }
 
 
+def environment() -> dict[str, object]:
+    """実行した計算機とソフトウェアの情報。"""
+    cpu_model = next(
+        (line.split(":", 1)[1].strip() for line in Path("/proc/cpuinfo").read_text().splitlines()
+         if line.startswith("model name")), platform.processor())
+    memory_kb = next(
+        int(line.split()[1]) for line in Path("/proc/meminfo").read_text().splitlines()
+        if line.startswith("MemTotal"))
+    return {
+        "cpu_model": cpu_model,
+        "cpu_logical_cores": os.cpu_count(),
+        "memory_gib": round(memory_kb / 1024**2, 1),
+        "architecture": platform.machine(),
+        "os": platform.platform(),
+        "python": platform.python_version(),
+        "numpy": np.__version__,
+        "scikit_learn": sklearn.__version__,
+    }
+
+
 def main() -> None:
     table = np.loadtxt(download_data(), skiprows=1)
     features, target = table[:, :-1], table[:, -1]
@@ -39,6 +62,7 @@ def main() -> None:
         "target": {"mean": float(target.mean()), "std": float(target.std())},
         "train": metrics(y_train, model.predict(x_train)),
         "test": metrics(y_test, model.predict(x_test)),
+        "environment": environment(),
     }
     RESULTS_PATH.parent.mkdir(parents=True, exist_ok=True)
     RESULTS_PATH.write_text(json.dumps(result, indent=2) + "\n")
