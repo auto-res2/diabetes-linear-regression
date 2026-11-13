@@ -2,7 +2,7 @@
 
 糖尿病データセット（Efron et al., 2004）に線形回帰モデルを当てはめ、予測性能を評価する実験。
 
-- レポート: [`report/report.pdf`](report/report.pdf)
+- レポート: [`report/report.pdf`](report/report.pdf)（論文の「実験設定」と「結果」の節を抜粋した体裁）
 - 実験コード: [`src/run_experiment.py`](src/run_experiment.py)
 - 出力: [`results/metrics.json`](results/metrics.json)
 
