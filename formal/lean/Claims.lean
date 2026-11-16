@@ -7,4 +7,6 @@ abbrev R01_c2 : Prop := observedSha256 = dataSha256
 abbrev R01_c3 : Prop := dataSha256 = literatureSha256
 abbrev R01_c1 : Prop := R01_c2 ∧ R01_c3
 
+abbrev R22_c1 (margin : Rat) : Prop := testR2 + margin ≤ trainR2
+
 end Claims

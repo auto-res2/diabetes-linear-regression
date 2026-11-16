@@ -85,5 +85,52 @@
         }
       }
     }
+  },
+  {
+    "id": "R22_c1",
+    "sentence": "テストデータに対する R² は，訓練データに対する値を大きく下回った",
+    "completion": {
+      "completer": "仮想的な補完器",
+      "sentence": "テストデータに対する R² に margin を足しても，訓練データに対する R² 以下である",
+      "definitions": [
+        "「大きく下回った」= 差が margin 以上",
+        "margin = 1/10"
+      ]
+    },
+    "formalization": {
+      "formalizer": "Lean",
+      "proposition_name": "R22_c1",
+      "arguments": {
+        "margin": "1/10"
+      }
+    },
+    "values": {
+      "testR2": {
+        "verifier": "GitHub",
+        "query": "artifact_json",
+        "args": {
+          "run": 43859698641,
+          "artifact": "run-output",
+          "path": "outputs/results/metrics.json",
+          "key": [
+            "test",
+            "r2"
+          ]
+        }
+      },
+      "trainR2": {
+        "verifier": "GitHub",
+        "query": "artifact_json",
+        "args": {
+          "run": 43859698641,
+          "artifact": "run-output",
+          "path": "outputs/results/metrics.json",
+          "key": [
+            "train",
+            "r2"
+          ]
+        }
+      }
+    }
   }
 ]

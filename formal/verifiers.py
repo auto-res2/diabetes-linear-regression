@@ -1,6 +1,7 @@
 """検証器。識別子を受け取り、値を返す。claims の形は知らない。"""
 import hashlib
 import json
+from fractions import Fraction
 import re
 import subprocess
 import tempfile
@@ -22,9 +23,12 @@ def artifact_file_sha256(repository: str, run: int, artifact: str, path: str) ->
     return hashlib.sha256(_artifact_file(repository, run, artifact, path)).hexdigest()
 
 
-def artifact_json(repository: str, run: int, artifact: str, path: str, key: str):
-    """その run の成果物にある JSON の、キーの値。"""
-    return json.loads(_artifact_file(repository, run, artifact, path))[key]
+def artifact_json(repository: str, run: int, artifact: str, path: str, key: str | list[str]):
+    """その run の成果物にある JSON の、キーの値。key がリストなら入れ子を順に辿る。小数は書かれた桁のままの有理数で返す。"""
+    value = json.loads(_artifact_file(repository, run, artifact, path), parse_float=Fraction)
+    for part in [key] if isinstance(key, str) else key:
+        value = value[part]
+    return value
 
 
 def run_source_text(repository: str, run: int, path: str, pattern: str) -> str:
