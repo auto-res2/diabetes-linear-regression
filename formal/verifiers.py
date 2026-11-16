@@ -42,4 +42,40 @@ def run_source_text(repository: str, run: int, path: str, pattern: str) -> str:
     return matches[0]
 
 
-QUERIES = {"GitHub": {f.__name__: f for f in (artifact_file_sha256, artifact_json, run_source_text)}}
+def _commit_position(repository: str, commit: str) -> int:
+    """その commit までの履歴にある commit の数。履歴が一本なら、小さいほど前。"""
+    headers = _gh("api", "-i", f"repos/{repository}/commits?sha={commit}&per_page=1")
+    last_page = re.search(r'[?&]page=(\d+)>; rel="last"', headers)
+    return int(last_page.group(1)) if last_page else 1
+
+
+def run_commit_position(repository: str, run: int) -> int:
+    """その run が実行した commit の、履歴の中での位置。"""
+    commit = _gh("api", f"repos/{repository}/actions/runs/{run}", "--jq", ".head_sha").strip()
+    return _commit_position(repository, commit)
+
+
+def json_value_commit_position(repository: str, branch: str, path: str, key: str | list) -> int:
+    """その branch の JSON ファイルで、キーの値が今の値になった commit の、履歴の中での位置。"""
+    commits = _gh("api", f"repos/{repository}/commits?path={path}&sha={branch}&per_page=100", "--jq", ".[].sha").split()
+
+    def value_at(commit: str):
+        value = json.loads(_gh("api", f"repos/{repository}/contents/{path}?ref={commit}",
+                               "-H", "Accept: application/vnd.github.raw"))
+        try:
+            for part in [key] if isinstance(key, str) else key:
+                value = value[part]
+        except (KeyError, IndexError):
+            return None
+        return value
+
+    current, declared = value_at(commits[0]), commits[0]
+    for commit in commits[1:]:  # 新しい順。値が変わったところで止める
+        if value_at(commit) != current:
+            break
+        declared = commit
+    return _commit_position(repository, declared)
+
+
+QUERIES = {"GitHub": {f.__name__: f for f in (artifact_file_sha256, artifact_json, run_source_text,
+                                               run_commit_position, json_value_commit_position)}}

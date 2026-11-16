@@ -132,5 +132,73 @@
         }
       }
     }
+  },
+  {
+    "id": "R22_c2",
+    "sentence": "訓練データに対する R² は 0.554 である",
+    "completion": {
+      "completer": "仮想的な補完器",
+      "sentence": "訓練データに対する R² は，小数第 3 位に四捨五入すると 0.554 である",
+      "definitions": [
+        "値 = 小数第 3 位に四捨五入"
+      ]
+    },
+    "formalization": {
+      "formalizer": "Lean",
+      "proposition_name": "R22_c2"
+    },
+    "values": {
+      "trainR2": {
+        "verifier": "GitHub",
+        "query": "artifact_json",
+        "args": {
+          "run": 43859698641,
+          "artifact": "run-output",
+          "path": "outputs/results/metrics.json",
+          "key": [
+            "train",
+            "r2"
+          ]
+        }
+      }
+    }
+  },
+  {
+    "id": "R22_c3",
+    "sentence": "「大きく」の基準を，結果を見た後に決めていない",
+    "completion": {
+      "completer": "仮想的な補完器",
+      "sentence": "margin を宣言した commit は，実験を実行した commit より前にある",
+      "definitions": [
+        "「結果を見た後に決めていない」= 宣言の commit が実行の commit より前（HARKing の検査）"
+      ]
+    },
+    "formalization": {
+      "formalizer": "Lean",
+      "proposition_name": "R22_c3"
+    },
+    "values": {
+      "marginAtCommit": {
+        "verifier": "GitHub",
+        "query": "json_value_commit_position",
+        "args": {
+          "branch": "main",
+          "path": "formal/claims.json",
+          "key": [
+            3,
+            "formalization",
+            "arguments",
+            "margin"
+          ]
+        }
+      },
+      "runAtCommit": {
+        "verifier": "GitHub",
+        "query": "run_commit_position",
+        "args": {
+          "run": 43859698641
+        }
+      }
+    }
   }
 ]
