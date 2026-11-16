@@ -6,3 +6,5 @@ report/*.log
 report/*.out
 run-output/
 formal/lean/.lake/
+formal/lean/Values.lean
+formal/lean/Theorems.lean
