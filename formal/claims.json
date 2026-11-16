@@ -1,0 +1,89 @@
+[
+  {
+    "id": "R01_c1",
+    "sentence": "Efron ら [1] が用いた糖尿病データセットを使用した",
+    "completion": {
+      "completer": "仮想的な補完器",
+      "sentence": "実行が読んだデータのファイルは，文献 [1] が示すファイルである",
+      "definitions": [
+        "c1 = c2 ∧ c3"
+      ]
+    },
+    "formalization": {
+      "formalizer": "Lean",
+      "proposition_name": "R01_c1"
+    },
+    "values": {}
+  },
+  {
+    "id": "R01_c2",
+    "sentence": "実行が読んだファイルは，宣言したファイルである",
+    "completion": {
+      "completer": "仮想的な補完器",
+      "sentence": "実行が読んだファイルの SHA-256 は，コードに固定した SHA-256 と一致する",
+      "definitions": [
+        "「使用した」= 実行がそのファイルを読んだ"
+      ]
+    },
+    "formalization": {
+      "formalizer": "Lean",
+      "proposition_name": "R01_c2"
+    },
+    "values": {
+      "observedSha256": {
+        "verifier": "GitHub",
+        "query": "artifact_file_sha256",
+        "args": {
+          "run": 43854662927,
+          "artifact": "run-output",
+          "path": "outputs/data/diabetes.tab.txt"
+        }
+      },
+      "dataSha256": {
+        "verifier": "GitHub",
+        "query": "run_source_text",
+        "args": {
+          "run": 43854662927,
+          "path": "src/download_data.py",
+          "pattern": "DATA_SHA256 = \"([0-9a-f]{64})\""
+        }
+      }
+    }
+  },
+  {
+    "id": "R01_c3",
+    "sentence": "宣言したファイルは，文献 [1] が示すファイルである",
+    "completion": {
+      "completer": "仮想的な補完器",
+      "sentence": "コードに固定した SHA-256 は，文献が示すファイルの SHA-256 と一致する",
+      "definitions": [
+        "「文献 [1] が示すファイル」= https://www4.stat.ncsu.edu/~boos/var.select/diabetes.tab.txt から取得したファイル"
+      ]
+    },
+    "formalization": {
+      "formalizer": "Lean",
+      "proposition_name": "R01_c3"
+    },
+    "values": {
+      "dataSha256": {
+        "verifier": "GitHub",
+        "query": "run_source_text",
+        "args": {
+          "run": 43854662927,
+          "path": "src/download_data.py",
+          "pattern": "DATA_SHA256 = \"([0-9a-f]{64})\""
+        }
+      },
+      "literatureSha256": {
+        "verifier": "GitHub",
+        "query": "artifact_json",
+        "args": {
+          "run": 43854662927,
+          "artifact": "run-output",
+          "path": "fetched_urls.json",
+          "key": "https://www4.stat.ncsu.edu/~boos/var.select/diabetes.tab.txt"
+        }
+      }
+    }
+  }
+]

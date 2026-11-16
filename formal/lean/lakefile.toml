@@ -1,0 +1,11 @@
+name = "formal"
+defaultTargets = ["Theorems"]
+
+[[lean_lib]]
+name = "Values"
+
+[[lean_lib]]
+name = "Claims"
+
+[[lean_lib]]
+name = "Theorems"

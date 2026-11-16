@@ -12,15 +12,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
-        with:
-          python-version: "3.13.3"
-      - run: uv sync --frozen
-      - run: uv run python src/run_experiment.py
-      # 検証器が読む先。出力と、この run が実際に読んだデータのファイルを残す
+      # 何を実行し、何を取得し、何を残すかは formal/declaration.json が決める
+      - run: python3 formal/cli.py run
       - uses: actions/upload-artifact@v4
         with:
           name: run-output
-          path: |
-            results/metrics.json
-            data/diabetes.tab.txt
+          path: run-output/
           if-no-files-found: error
