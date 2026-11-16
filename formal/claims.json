@@ -13,7 +13,36 @@
       "formalizer": "Lean",
       "proposition_name": "R01_c1"
     },
-    "values": {}
+    "values": {
+      "observedSha256": {
+        "verifier": "GitHub",
+        "query": "artifact_file_sha256",
+        "args": {
+          "run": 43895139509,
+          "artifact": "run-output",
+          "path": "outputs/data/diabetes.tab.txt"
+        }
+      },
+      "dataSha256": {
+        "verifier": "GitHub",
+        "query": "run_source_text",
+        "args": {
+          "run": 43895139509,
+          "path": "src/download_data.py",
+          "pattern": "DATA_SHA256 = \"([0-9a-f]{64})\""
+        }
+      },
+      "literatureSha256": {
+        "verifier": "GitHub",
+        "query": "artifact_json",
+        "args": {
+          "run": 43895139509,
+          "artifact": "run-output",
+          "path": "fetched_urls.json",
+          "key": "https://www4.stat.ncsu.edu/~boos/var.select/diabetes.tab.txt"
+        }
+      }
+    }
   },
   {
     "id": "R01_c2",
