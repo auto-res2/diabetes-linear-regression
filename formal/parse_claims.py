@@ -24,7 +24,17 @@ def lean_proposition(claim: dict) -> str:
     return " ".join([claim["formalization"]["proposition_name"]] + arguments)
 
 
-def main() -> None:
+HEADER = ["import Values", "import Claims", "open Claims"]
+
+
+def theorem(name: str, proposition: str, holds: bool) -> str:
+    """命題が真である定理、または偽である（否定の）定理。有理数の比較は decide では簡約が止まるので、kernel に評価させる。"""
+    statement = proposition if holds else f"¬ ({proposition})"
+    return f"theorem {name}_{'holds' if holds else 'fails'} : {statement} := by decide +kernel"
+
+
+def write_values() -> list[tuple[str, str]]:
+    """検証器を呼んで Values.lean を書き、(claim の id, 値を入れた命題) の一覧を返す。"""
     claims = json.loads((FORMAL / "claims.json").read_text(encoding="utf-8"))
     values, answered = {}, {}
     for claim in claims:
@@ -40,14 +50,12 @@ def main() -> None:
     lines = ["/-! 検証器が返した値。parse_claims.py が生成する。手で編集しない。 -/", "namespace Values"]
     lines += [f"def {name} : {LEAN_TYPE[type(value)]} := {lean_literal(value)}" for name, value in values.items()]
     (FORMAL / "lean" / "Values.lean").write_text("\n".join(lines + ["end Values", ""]), encoding="utf-8")
+    return [(claim["id"], lean_proposition(claim)) for claim in claims]
 
-    theorems = [(claim["id"], lean_proposition(claim)) for claim in claims]
-    lines = ["import Values", "import Claims", "/-! 各命題を定理として閉じる。parse_claims.py が生成する。 -/", "open Claims"]
-    # 有理数の比較は decide では簡約が止まるので、kernel に評価させる
-    lines += [f"theorem {name}_holds : {proposition} := by decide +kernel" for name, proposition in theorems]
-    lines += [f"#print axioms {name}_holds" for name, _ in theorems]
+
+def write_theorems(judged: list[tuple[str, str, bool]]) -> None:
+    """判定が付いた命題を、真なら定理、偽なら否定の定理として Theorems.lean に書く。"""
+    lines = HEADER + ["/-! 各命題の判定。parse_claims.py が生成する。 -/"]
+    lines += [theorem(name, proposition, holds) for name, proposition, holds in judged]
+    lines += [f"#print axioms {name}_{'holds' if holds else 'fails'}" for name, _, holds in judged]
     (FORMAL / "lean" / "Theorems.lean").write_text("\n".join(lines) + "\n", encoding="utf-8")
-
-
-if __name__ == "__main__":
-    main()

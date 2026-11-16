@@ -8,6 +8,7 @@ import json
 import shutil
 import subprocess
 import sys
+import tempfile
 import urllib.request
 from pathlib import Path
 
@@ -32,8 +33,27 @@ def run() -> None:
 
 def verify() -> None:
     import parse_claims
-    parse_claims.main()
-    subprocess.run(["lake", "build"], cwd=FORMAL / "lean", check=True)
+    lean = FORMAL / "lean"
+    propositions = parse_claims.write_values()
+    subprocess.run(["lake", "build", "Values", "Claims"], cwd=lean, check=True)
+
+    def proves(name: str, proposition: str, holds: bool) -> bool:
+        with tempfile.NamedTemporaryFile("w", suffix=".lean", encoding="utf-8") as file:
+            file.write("\n".join(parse_claims.HEADER + [parse_claims.theorem(name, proposition, holds)]) + "\n")
+            file.flush()
+            return subprocess.run(["lake", "env", "lean", file.name], cwd=lean, capture_output=True).returncode == 0
+
+    # claim ごとに、真の定理を試し、通らなければ偽（否定）の定理を試す。どちらも通らなければ判定できず
+    verdicts = {name: True if proves(name, proposition, True) else False if proves(name, proposition, False) else None
+                for name, proposition in propositions}
+    parse_claims.write_theorems([(name, proposition, verdicts[name]) for name, proposition in propositions
+                                 if verdicts[name] is not None])
+    subprocess.run(["lake", "build"], cwd=lean, check=True)
+    for name, verdict in verdicts.items():
+        print(name + ": " + {True: "真", False: "偽", None: "判定できず"}[verdict])
+    # 真か偽かは研究の結果。検証として失敗なのは、判定できなかった命題があるときだけ
+    if None in verdicts.values():
+        sys.exit(1)
 
 
 if __name__ == "__main__":
